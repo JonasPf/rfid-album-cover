@@ -17,15 +17,15 @@ Each sticker is smaller than the card by the **inset** on every side (default 1.
 
 You need Node.js 22 or newer and [Task](https://taskfile.dev). Install the Playwright browsers once with `npx playwright install`.
 
-| Command      | Does                                                             |
-| ------------ | ---------------------------------------------------------------- |
-| `task build` | Type-check and build the static site into `dist/`                |
-| `task run`   | Start the Vite dev server                                        |
-| `task lint`  | ESLint, Prettier check and svelte-check                          |
-| `task test`  | Unit tests (Vitest)                                              |
-| `task e2e`   | Playwright tests in Chromium, Firefox and WebKit against `dist/` |
-| `task check` | All of the above; run it before every commit                     |
-| `task spec`  | Serve the specification at http://localhost:8000                 |
+| Command      | Does                                                                                      |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| `task build` | Type-check and build the static site into `dist/`                                         |
+| `task run`   | Start the Vite dev server                                                                 |
+| `task lint`  | ESLint, Prettier check and svelte-check                                                   |
+| `task test`  | Unit tests (Vitest)                                                                       |
+| `task e2e`   | Playwright tests in Chromium, Firefox and WebKit against `dist/`, plus a dev-server check |
+| `task check` | All of the above; run it before every commit                                              |
+| `task spec`  | Serve the specification at http://localhost:8000                                          |
 
 The specification lives in [`specs/`](specs/index.html). The e2e tests stub the iTunes API with the files in `fixtures/` and never call Apple; each test names the acceptance criteria (`AC-…`) it covers.
 

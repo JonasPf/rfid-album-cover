@@ -6,15 +6,15 @@ A static, client-only web app (TypeScript, Vite, Svelte, pdf-lib) that turns alb
 
 Workflows are driven through `task` (`Taskfile.yml`). Install the Playwright browsers once with `npx playwright install`.
 
-| Task      | Command      | Notes                                                                  |
-| --------- | ------------ | ---------------------------------------------------------------------- |
-| **Build** | `task build` | Type-checks and builds the static site into `dist/`                    |
-| **Run**   | `task run`   | Vite dev server                                                        |
-| **Lint**  | `task lint`  | ESLint, Prettier check, svelte-check                                   |
-| **Test**  | `task test`  | Vitest unit tests                                                      |
-| **E2E**   | `task e2e`   | Playwright against a production build; iTunes is stubbed with fixtures |
-| **Check** | `task check` | Runs build, lint, test, e2e; fails if any fail                         |
-| **Spec**  | `task spec`  | Serves `./specs` at http://localhost:8000 (not part of `check`)        |
+| Task      | Command      | Notes                                                                                                        |
+| --------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
+| **Build** | `task build` | Type-checks and builds the static site into `dist/`                                                          |
+| **Run**   | `task run`   | Vite dev server                                                                                              |
+| **Lint**  | `task lint`  | ESLint, Prettier check, svelte-check                                                                         |
+| **Test**  | `task test`  | Vitest unit tests                                                                                            |
+| **E2E**   | `task e2e`   | Playwright against a production build, plus one check on a fresh dev server; iTunes is stubbed with fixtures |
+| **Check** | `task check` | Runs build, lint, test, e2e; fails if any fail                                                               |
+| **Spec**  | `task spec`  | Serves `./specs` at http://localhost:8000 (not part of `check`)                                              |
 
 ### Layout
 
