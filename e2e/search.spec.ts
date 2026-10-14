@@ -27,9 +27,9 @@ test.describe("Search", () => {
     expect(Object.fromEntries(url.searchParams)).toEqual({
       term: "AC/DC & Friends",
       media: "music",
-      entity: "album",
+      entity: "album,song",
       country: "US",
-      limit: "25",
+      limit: "200",
     });
     expect(url.search).not.toContain("AC/DC & Friends");
     expect(url.search).toContain("term=AC%2FDC+%26+Friends");
@@ -52,6 +52,68 @@ test.describe("Search", () => {
     await expect
       .poll(() => thumb.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
       .toBe(100);
+  });
+
+  test("AC-SEARCH-2: albums are listed once, in order of first appearance, at most 25", async ({
+    page,
+  }) => {
+    await stubItunes(page);
+    // 30 albums, each as a song and some also as an album or a second song.
+    const items = Array.from({ length: 30 }, (_, i) => {
+      const album = {
+        collectionId: 1000 + i,
+        artistName: `Artist ${i}`,
+        collectionName: `Album ${i}`,
+      };
+      const artworkUrl100 = `https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/a${i}/source/100x100bb.jpg`;
+      const entries: object[] = [{ wrapperType: "track", kind: "song", ...album, artworkUrl100 }];
+      if (i % 2) entries.push({ wrapperType: "collection", ...album, artworkUrl100 });
+      if (i % 3 === 0)
+        entries.push({ wrapperType: "track", kind: "song", ...album, artworkUrl100 });
+      return entries;
+    }).flat();
+    await page.route("https://itunes.apple.com/search?**", (route) =>
+      route.fulfill({
+        json: { resultCount: items.length, results: items },
+        headers: { "Access-Control-Allow-Origin": "*" },
+      }),
+    );
+    await page.goto("/");
+    await search(page);
+    await expect(results(page)).toHaveCount(25);
+    const titles = await results(page).allTextContents();
+    titles.forEach((text, i) => {
+      expect(text).toContain(`Artist ${i}`);
+      expect(text).toContain(`Album ${i}`);
+    });
+  });
+
+  test("AC-SEARCH-9: albums found only through their songs are listed, with the album artist", async ({
+    page,
+  }) => {
+    const stub = await stubItunes(page, { search: "songs" });
+    await page.goto("/");
+    await search(page, "nirvana nevermind");
+    await expect(results(page)).toHaveCount(3);
+    await expect(results(page).nth(0)).toContainText("Nirvana");
+    await expect(results(page).nth(0)).toContainText("Nevermind");
+    await expect(results(page).nth(0).locator("img")).toHaveAttribute(
+      "src",
+      /fixture\/nevermind\/source\/100x100bb\.jpg$/,
+    );
+    await expect(results(page).nth(1)).toContainText("Whatever Nevermind");
+    // A song on a compilation stands for the compilation and its album artist.
+    await expect(results(page).nth(2)).toContainText("Various Artists");
+    await expect(results(page).nth(2)).toContainText("Grunge Anthems");
+    await expect(results(page).nth(2)).not.toContainText("Nirvana");
+
+    await results(page).nth(0).click();
+    const entry = entries(page).first();
+    await expect(entry.getByLabel("Artist", { exact: true })).toHaveValue("Nirvana");
+    await expect(entry.getByLabel("Title", { exact: true })).toHaveValue("Nevermind");
+    expect(stub.artwork).toContain(
+      "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/nevermind/source/1200x1200bb.jpg",
+    );
   });
 
   test("AC-SEARCH-3: clicking a result appends an entry with its artist, title and 1200 px art", async ({

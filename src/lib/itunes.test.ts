@@ -4,15 +4,15 @@ import { fullSizeArtworkUrl, parseResults, searchAlbums, searchUrl } from "./itu
 const art100 = "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/aa/bb/cc/source/100x100bb.jpg";
 
 describe("searchUrl", () => {
-  it("builds the album search request with the term encoded", () => {
+  it("builds the album and song search request with the term encoded", () => {
     const url = new URL(searchUrl("AC/DC & friends"));
     expect(url.origin + url.pathname).toBe("https://itunes.apple.com/search");
     expect([...url.searchParams]).toEqual([
       ["term", "AC/DC & friends"],
       ["media", "music"],
-      ["entity", "album"],
+      ["entity", "album,song"],
       ["country", "US"],
-      ["limit", "25"],
+      ["limit", "200"],
     ]);
     expect(searchUrl("a b&c")).toContain("term=a+b%26c&");
   });
@@ -39,6 +39,47 @@ describe("parseResults", () => {
       { artist: "A", title: "One", thumbnailUrl: art100, artworkUrl: fullSizeArtworkUrl(art100) },
       { artist: "B", title: "Two", thumbnailUrl: art100, artworkUrl: fullSizeArtworkUrl(art100) },
     ]);
+  });
+
+  it("groups songs under their album, in order of first appearance", () => {
+    const nevermind = { collectionId: 1, artistName: "Nirvana", collectionName: "Nevermind" };
+    const albums = parseResults({
+      results: [
+        { wrapperType: "track", trackName: "Smells Like Teen Spirit", ...nevermind },
+        { wrapperType: "collection", collectionId: 2, artistName: "VA", collectionName: "Tribute" },
+        { wrapperType: "track", trackName: "Come as You Are", ...nevermind },
+        { wrapperType: "collection", ...nevermind },
+      ],
+    });
+    expect(albums.map((a) => `${a.artist}: ${a.title}`)).toEqual([
+      "Nirvana: Nevermind",
+      "VA: Tribute",
+    ]);
+  });
+
+  it("uses the album artist for a song on a compilation", () => {
+    const [album] = parseResults({
+      results: [
+        {
+          wrapperType: "track",
+          collectionId: 3,
+          artistName: "Nirvana",
+          collectionArtistName: "Various Artists",
+          collectionName: "Grunge Anthems",
+        },
+      ],
+    });
+    expect(album!.artist).toBe("Various Artists");
+  });
+
+  it("caps at 25 distinct albums", () => {
+    const results = Array.from({ length: 60 }, (_, i) => ({
+      collectionId: Math.floor(i / 2),
+      collectionName: `Album ${Math.floor(i / 2)}`,
+    }));
+    expect(parseResults({ results }).map((a) => a.title)).toEqual(
+      Array.from({ length: 25 }, (_, i) => `Album ${i}`),
+    );
   });
 
   it("tolerates missing fields and caps at 25", () => {

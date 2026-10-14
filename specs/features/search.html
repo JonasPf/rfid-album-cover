@@ -15,31 +15,35 @@
 <h2>Behaviour</h2>
 <ul>
   <li>The user types a search term and presses Enter or the Search button.</li>
-  <li>The page sends the request below and shows up to 25 results. Each result shows a thumbnail, the artist and the album title.</li>
+  <li>The page sends the request below and shows up to 25 albums. Each result shows a thumbnail, the artist and the album title.</li>
+  <li>Apple's album search misses some well-known albums that its song search finds, such as <i>Nevermind</i> by Nirvana. The request therefore asks for albums and songs, and each song stands for the album it is on. Results are grouped by album (<code>collectionId</code>) in API order: each album is listed once, where it first appears.</li>
   <li>Clicking a result adds a card entry to the end of the card list. The result stays in the list, so the same album can be added again.</li>
   <li>The card entry uses the 1200 × 1200 px artwork. The crop starts as the full square image.</li>
 </ul>
 
 <h3>Request</h3>
-<pre>GET https://itunes.apple.com/search?term=&lt;term&gt;&amp;media=music&amp;entity=album&amp;country=US&amp;limit=25</pre>
+<pre>GET https://itunes.apple.com/search?term=&lt;term&gt;&amp;media=music&amp;entity=album,song&amp;country=US&amp;limit=200</pre>
+<p>200 is the API's maximum. Songs from the same album repeat, so the response usually still holds 25 or more distinct albums.</p>
 <table>
   <tr><th>Response field</th><th>Used as</th></tr>
-  <tr><td><code>artistName</code></td><td>Artist</td></tr>
-  <tr><td><code>collectionName</code></td><td>Title</td></tr>
-  <tr><td><code>artworkUrl100</code></td><td>Thumbnail. Replacing <code>100x100bb</code> with <code>1200x1200bb</code> gives the full-size art.</td></tr>
+  <tr><td><code>collectionId</code></td><td>Groups the album and song results of one album</td></tr>
+  <tr><td><code>collectionArtistName</code>, else <code>artistName</code></td><td>Artist. <code>collectionArtistName</code> is the album artist, e.g. "Various Artists" for a song on a compilation.</td></tr>
+  <tr><td><code>collectionName</code></td><td>Title (for a song, the name of its album)</td></tr>
+  <tr><td><code>artworkUrl100</code></td><td>Thumbnail; songs carry their album's art. Replacing <code>100x100bb</code> with <code>1200x1200bb</code> gives the full-size art.</td></tr>
 </table>
 
 <h2>Acceptance criteria</h2>
 <table>
   <tr><th>ID</th><th>Criterion</th></tr>
   <tr><td><code>AC-SEARCH-1</code></td><td>Submitting a term (by Enter or the button) sends one request with the parameters above, with the term URL-encoded.</td></tr>
-  <tr><td><code>AC-SEARCH-2</code></td><td>Each result shows its thumbnail, artist and album title, in API order.</td></tr>
-  <tr><td><code>AC-SEARCH-3</code></td><td>Clicking a result appends a card entry whose artist and title equal <code>artistName</code> and <code>collectionName</code> and whose image comes from the 1200 px artwork URL.</td></tr>
+  <tr><td><code>AC-SEARCH-2</code></td><td>Each result shows its thumbnail, artist and album title. Albums appear in the order they first occur in the response, each once, and at most 25 are shown.</td></tr>
+  <tr><td><code>AC-SEARCH-3</code></td><td>Clicking a result appends a card entry with the result's artist and album title, whose image comes from the 1200 px artwork URL.</td></tr>
   <tr><td><code>AC-SEARCH-4</code></td><td>Clicking the same result twice adds two card entries.</td></tr>
   <tr><td><code>AC-SEARCH-5</code></td><td>Zero results show "No albums found".</td></tr>
   <tr><td><code>AC-SEARCH-6</code></td><td>A network or HTTP error shows "Search failed. Check your connection and try again." Existing card entries are unaffected.</td></tr>
   <tr><td><code>AC-SEARCH-7</code></td><td>If the artwork fails to load after a click, no card entry is added and "Could not load cover art" is shown.</td></tr>
   <tr><td><code>AC-SEARCH-8</code></td><td>An empty or whitespace-only term sends no request.</td></tr>
+  <tr><td><code>AC-SEARCH-9</code></td><td>An album that the response contains only through its songs, such as Nirvana's <i>Nevermind</i>, is listed with its album title and art. For a song on a compilation, the artist is the album artist.</td></tr>
 </table>
 </main>
 </body>

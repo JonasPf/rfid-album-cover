@@ -14,7 +14,8 @@ export interface ItunesStub {
 }
 
 export interface StubOptions {
-  search?: "results" | "empty" | "http-error" | "network-error";
+  /** "songs" answers with albums that are partly only present through their songs. */
+  search?: "results" | "songs" | "empty" | "http-error" | "network-error";
   /** Make the 1200 px artwork fail to load. */
   failArtwork?: boolean;
 }
@@ -28,6 +29,8 @@ export async function stubItunes(page: Page, options: StubOptions = {}): Promise
     switch (options.search ?? "results") {
       case "results":
         return route.fulfill({ path: fixture("itunes-search.json"), headers: cors });
+      case "songs":
+        return route.fulfill({ path: fixture("itunes-search-songs.json"), headers: cors });
       case "empty":
         return route.fulfill({ path: fixture("itunes-empty.json"), headers: cors });
       case "http-error":

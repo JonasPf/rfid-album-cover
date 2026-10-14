@@ -4,6 +4,7 @@
     {
       "wrapperType": "collection",
       "collectionType": "Album",
+      "collectionId": 1441164426,
       "artistName": "The Beatles",
       "collectionName": "Abbey Road (Remastered)",
       "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/abbey/source/60x60bb.jpg",
@@ -15,6 +16,7 @@
     {
       "wrapperType": "collection",
       "collectionType": "Album",
+      "collectionId": 1441164670,
       "artistName": "The Beatles",
       "collectionName": "Revolver",
       "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/revolver/source/60x60bb.jpg",
@@ -26,6 +28,7 @@
     {
       "wrapperType": "collection",
       "collectionType": "Album",
+      "collectionId": 1440653412,
       "artistName": "Rolf Zuckowski",
       "collectionName": "Rolfs Vogelhochzeit, Weihnachtsbäckerei und viele andere Lieder für die ganze Familie zum Mitsingen, Tanzen und Träumen",
       "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/rolf/source/60x60bb.jpg",

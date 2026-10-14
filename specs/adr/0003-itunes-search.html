@@ -14,18 +14,22 @@
 
 <h2>Context</h2>
 <p>Search must return album art large enough for printing. A 51 mm art area at 300 dpi needs about 600 px. It must also return the artist and title, with no API key, because a static page cannot hide one.</p>
+<p>The album search alone misses some well-known albums, such as Nirvana's <i>Nevermind</i>, which the song search finds.</p>
 <h2>Decision</h2>
-<p>Use the iTunes Search API (US store, <code>entity=album</code>) as the only online source. Request artwork at 1200 × 1200 px.</p>
+<p>Use the iTunes Search API (US store) as the only online source. Ask for albums and songs in one request (<code>entity=album,song</code>, 200 results) and group the songs under their albums. Request artwork at 1200 × 1200 px.</p>
 <h2>Alternatives</h2>
 <ul>
   <li><b>Deezer</b>: no key, but art only up to 1000 px.</li>
   <li><b>MusicBrainz + Cover Art Archive</b>: open data, but limited to 1 request/s, and many releases have no art.</li>
   <li><b>Several sources with fallback</b>: better coverage, but more code and duplicates to merge.</li>
+  <li><b>Separate album and song requests, merged</b>: two round trips, and no shared ranking to merge them by.</li>
 </ul>
 <h2>Consequences</h2>
 <ul>
   <li>Only the US catalogue is searched. Albums missing there need an upload.</li>
   <li>The 1200 px URL is a URL pattern, not a documented API. If it stops working, the 100 px thumbnail would trigger the low-resolution warning.</li>
+  <li>A comma-separated <code>entity</code> list is not documented either. If it stops working, albums found only through their songs go missing again.</li>
+  <li>Each search downloads up to 200 results, about 33 KB compressed.</li>
 </ul>
 </main>
 </body>

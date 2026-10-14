@@ -1,0 +1,54 @@
+{
+  "resultCount": 5,
+  "results": [
+    {
+      "wrapperType": "track",
+      "kind": "song",
+      "collectionId": 1440783617,
+      "artistName": "Nirvana",
+      "collectionName": "Nevermind",
+      "trackName": "Smells Like Teen Spirit",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/nevermind/source/100x100bb.jpg",
+      "country": "USA"
+    },
+    {
+      "wrapperType": "collection",
+      "collectionType": "Album",
+      "collectionId": 1440874411,
+      "artistName": "Various Artists",
+      "collectionName": "Whatever Nevermind: A Tribute to Nirvana's Nevermind",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/tribute/source/100x100bb.jpg",
+      "country": "USA"
+    },
+    {
+      "wrapperType": "track",
+      "kind": "song",
+      "collectionId": 1440783617,
+      "artistName": "Nirvana",
+      "collectionName": "Nevermind",
+      "trackName": "Come as You Are",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/nevermind/source/100x100bb.jpg",
+      "country": "USA"
+    },
+    {
+      "wrapperType": "track",
+      "kind": "song",
+      "collectionId": 1452196220,
+      "artistName": "Nirvana",
+      "collectionArtistName": "Various Artists",
+      "collectionName": "Grunge Anthems",
+      "trackName": "Lithium",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/grunge/source/100x100bb.jpg",
+      "country": "USA"
+    },
+    {
+      "wrapperType": "collection",
+      "collectionType": "Album",
+      "collectionId": 1452196220,
+      "artistName": "Various Artists",
+      "collectionName": "Grunge Anthems",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/grunge/source/100x100bb.jpg",
+      "country": "USA"
+    }
+  ]
+}
