@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upload and Crop</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › Features › Upload and crop</nav>
+<h1>Upload and crop</h1>
+<p class="lede">Add any image and choose which square part of it appears in the art area.</p>
+
+<h2>Upload</h2>
+<ul>
+  <li>The user picks a file, or drops it on the upload zone. Several files can be added at once.</li>
+  <li>JPEG, PNG and WebP are accepted.</li>
+  <li>The crop dialog opens for each file in turn. Confirming adds a card entry with an empty artist and title, then puts focus in its title field. Cancelling skips that file and moves on to the next.</li>
+</ul>
+
+<h2>Crop dialog</h2>
+<p>The same dialog re-crops an existing card entry. See <a href="cards.html">Card list</a>.</p>
+<ul>
+  <li>A square frame shows exactly what the art area will show.</li>
+  <li><b>Pan:</b> drag the image with a mouse or by touch, or press the arrow keys while the frame has focus. Each key press moves the region by 5 % of its side.</li>
+  <li><b>Zoom:</b> use the slider or the mouse wheel. The slider zooms around the frame centre, the wheel around the pointer. The minimum zoom makes the image just cover the frame. The maximum is 8× the minimum.</li>
+  <li>The image always covers the frame completely, so no empty area can show.</li>
+  <li>A new image starts at minimum zoom, centred.</li>
+  <li>The crop is stored as a square region in source-image pixels, rounded to whole pixels.</li>
+</ul>
+
+<h2>Acceptance criteria</h2>
+<table>
+  <tr><th>ID</th><th>Criterion</th></tr>
+  <tr><td><code>AC-UPLOAD-1</code></td><td>Choosing a JPEG, PNG or WebP file through the file picker opens the crop dialog for it.</td></tr>
+  <tr><td><code>AC-UPLOAD-2</code></td><td>Dropping a supported file on the upload zone opens the crop dialog for it.</td></tr>
+  <tr><td><code>AC-UPLOAD-3</code></td><td>An unsupported or unreadable file shows "&lt;file name&gt; is not a supported image (JPEG, PNG, WebP)" and adds nothing.</td></tr>
+  <tr><td><code>AC-UPLOAD-4</code></td><td>Adding 3 files opens the crop dialog 3 times in sequence. Each confirmation adds one card entry.</td></tr>
+  <tr><td><code>AC-UPLOAD-5</code></td><td>Confirming adds a card entry with an empty artist and title, and focuses its title field.</td></tr>
+  <tr><td><code>AC-UPLOAD-6</code></td><td>Cancelling (button or Esc) adds nothing. With several files, the dialog moves on to the next file. For a re-crop, it leaves the entry unchanged.</td></tr>
+  <tr><td><code>AC-CROP-1</code></td><td>For a 1600 × 900 px image, the initial crop is the centred 900 × 900 px square.</td></tr>
+  <tr><td><code>AC-CROP-2</code></td><td>Dragging, or pressing an arrow key with the frame focused, moves the visible region. The crop never extends past the image edges.</td></tr>
+  <tr><td><code>AC-CROP-3</code></td><td>Zoom is limited to between the minimum (image covers the frame) and 8× the minimum.</td></tr>
+  <tr><td><code>AC-CROP-4</code></td><td>After confirming, the card preview's art area shows the same region as the frame did.</td></tr>
+</table>
+</main>
+</body>
+</html>

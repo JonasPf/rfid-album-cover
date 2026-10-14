@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search Feature</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › Features › Search</nav>
+<h1>Search</h1>
+<p class="lede">Find albums in the iTunes catalogue and add them as card entries, with cover art, artist and title filled in.</p>
+
+<h2>Behaviour</h2>
+<ul>
+  <li>The user types a search term and presses Enter or the Search button.</li>
+  <li>The page sends the request below and shows up to 25 results. Each result shows a thumbnail, the artist and the album title.</li>
+  <li>Clicking a result adds a card entry to the end of the card list. The result stays in the list, so the same album can be added again.</li>
+  <li>The card entry uses the 1200 × 1200 px artwork. The crop starts as the full square image.</li>
+</ul>
+
+<h3>Request</h3>
+<pre>GET https://itunes.apple.com/search?term=&lt;term&gt;&amp;media=music&amp;entity=album&amp;country=US&amp;limit=25</pre>
+<table>
+  <tr><th>Response field</th><th>Used as</th></tr>
+  <tr><td><code>artistName</code></td><td>Artist</td></tr>
+  <tr><td><code>collectionName</code></td><td>Title</td></tr>
+  <tr><td><code>artworkUrl100</code></td><td>Thumbnail. Replacing <code>100x100bb</code> with <code>1200x1200bb</code> gives the full-size art.</td></tr>
+</table>
+
+<h2>Acceptance criteria</h2>
+<table>
+  <tr><th>ID</th><th>Criterion</th></tr>
+  <tr><td><code>AC-SEARCH-1</code></td><td>Submitting a term (by Enter or the button) sends one request with the parameters above, with the term URL-encoded.</td></tr>
+  <tr><td><code>AC-SEARCH-2</code></td><td>Each result shows its thumbnail, artist and album title, in API order.</td></tr>
+  <tr><td><code>AC-SEARCH-3</code></td><td>Clicking a result appends a card entry whose artist and title equal <code>artistName</code> and <code>collectionName</code> and whose image comes from the 1200 px artwork URL.</td></tr>
+  <tr><td><code>AC-SEARCH-4</code></td><td>Clicking the same result twice adds two card entries.</td></tr>
+  <tr><td><code>AC-SEARCH-5</code></td><td>Zero results show "No albums found".</td></tr>
+  <tr><td><code>AC-SEARCH-6</code></td><td>A network or HTTP error shows "Search failed. Check your connection and try again." Existing card entries are unaffected.</td></tr>
+  <tr><td><code>AC-SEARCH-7</code></td><td>If the artwork fails to load after a click, no card entry is added and "Could not load cover art" is shown.</td></tr>
+  <tr><td><code>AC-SEARCH-8</code></td><td>An empty or whitespace-only term sends no request.</td></tr>
+</table>
+</main>
+</body>
+</html>

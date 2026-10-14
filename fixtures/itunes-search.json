@@ -1,0 +1,38 @@
+{
+  "resultCount": 3,
+  "results": [
+    {
+      "wrapperType": "collection",
+      "collectionType": "Album",
+      "artistName": "The Beatles",
+      "collectionName": "Abbey Road (Remastered)",
+      "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/abbey/source/60x60bb.jpg",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/abbey/source/100x100bb.jpg",
+      "trackCount": 17,
+      "country": "USA",
+      "currency": "USD"
+    },
+    {
+      "wrapperType": "collection",
+      "collectionType": "Album",
+      "artistName": "The Beatles",
+      "collectionName": "Revolver",
+      "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/revolver/source/60x60bb.jpg",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/revolver/source/100x100bb.jpg",
+      "trackCount": 17,
+      "country": "USA",
+      "currency": "USD"
+    },
+    {
+      "wrapperType": "collection",
+      "collectionType": "Album",
+      "artistName": "Rolf Zuckowski",
+      "collectionName": "Rolfs Vogelhochzeit, Weihnachtsbäckerei und viele andere Lieder für die ganze Familie zum Mitsingen, Tanzen und Träumen",
+      "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/rolf/source/60x60bb.jpg",
+      "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fixture/rolf/source/100x100bb.jpg",
+      "trackCount": 17,
+      "country": "USA",
+      "currency": "USD"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sticker Sheet PDF</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › Features › Sticker sheet PDF</nav>
+<h1>Sticker sheet PDF</h1>
+<p class="lede">Sticker geometry, the inset setting, and the A4 PDF the user prints and cuts with a paper trimmer. See the <a href="../ui/sheet.html">sheet mock</a> and <a href="../adr/0004-sticker-geometry.html">ADR 0004</a>.</p>
+
+<h2>Sticker geometry</h2>
+<p>All sizes are in mm, with inset <code>i</code>.</p>
+<table>
+  <tr><th>Part</th><th>Size (w × h)</th><th>At default i = 1.5</th></tr>
+  <tr><td>Card (portrait)</td><td>54 × 85.6</td><td>54 × 85.6</td></tr>
+  <tr><td>Sticker</td><td>(54 − 2i) × (85.6 − 2i), square corners</td><td>51 × 82.6</td></tr>
+  <tr><td>Art area (top)</td><td>(54 − 2i) × (54 − 2i)</td><td>51 × 51</td></tr>
+  <tr><td>Text area (bottom)</td><td>(54 − 2i) × 31.6</td><td>51 × 31.6</td></tr>
+</table>
+
+<h2>Inset setting</h2>
+<ul>
+  <li>A number input labelled "Inset (mm)": range 0.0 to 3.0, step 0.1, default 1.5.</li>
+  <li>Values outside the range are clamped when the field loses focus. An empty or invalid value restores the last valid one. The field then shows the value with one decimal, e.g. "3.0".</li>
+  <li>The setting applies to every preview and to the PDF. Like the card list, it resets on reload.</li>
+</ul>
+
+<h2>Sheet layout</h2>
+<ul>
+  <li>The page is A4 portrait, 210 × 297 mm.</li>
+  <li>Up to 9 stickers sit in a 3 × 3 grid with no gaps, centred on the page.</li>
+  <li>Card entries fill the positions row by row, left to right, in list order. Entry 10 starts page 2.</li>
+  <li><b>Cut marks</b> are drawn at each of the 4 vertical and 4 horizontal grid lines, outside the grid on both ends. Each mark is 5 mm long, starts 2 mm from the grid edge, and is 0.2 mm thick and black. Every page shows the full set of marks, including partly filled pages.</li>
+  <li><b>Calibration line:</b> a 100 mm line with end ticks sits 10 mm below the grid, starting at the grid's left edge. The label "Should measure 100 mm" follows 3 mm to its right, at 6 pt.</li>
+</ul>
+
+<h2>PDF output</h2>
+<ul>
+  <li>The <b>Download PDF</b> button saves <code>rfid-cards.pdf</code>. Next to it is the hint "Print at 100 % / Actual size".</li>
+  <li>Each art area holds a JPEG rendered from the crop at 300 dpi of the art-area size (602 px at the default inset). If the crop has fewer pixels, it is used at its native size and never upscaled.</li>
+  <li>The text uses the same font as the preview, embedded in the PDF, with the text-fit result from <a href="cards.html">Card list</a>. The title is black and the artist is dark grey (#555).</li>
+  <li>The text area is not printed on, so the paper shows through.</li>
+  <li>If the PDF cannot be built, the page shows "Could not create the PDF. Try again."</li>
+</ul>
+
+<h2>Acceptance criteria</h2>
+<table>
+  <tr><th>ID</th><th>Criterion</th></tr>
+  <tr><td><code>AC-SHEET-1</code></td><td>At inset 1.5, each sticker in the PDF is 51 × 82.6 mm, with a 51 × 51 mm art area at its top. Tolerance is ±0.05 mm.</td></tr>
+  <tr><td><code>AC-SHEET-2</code></td><td>At inset 0 and at inset 3.0, the sticker sizes follow the formulas above.</td></tr>
+  <tr><td><code>AC-SHEET-3</code></td><td>Entering 5 in the inset field results in 3.0. Entering −1 results in 0.0. Clearing the field restores the last valid value.</td></tr>
+  <tr><td><code>AC-SHEET-4</code></td><td>Changing the inset updates all previews immediately.</td></tr>
+  <tr><td><code>AC-SHEET-5</code></td><td>Every page is exactly 210 × 297 mm (595.28 × 841.89 pt).</td></tr>
+  <tr><td><code>AC-SHEET-6</code></td><td>The grid is centred horizontally and vertically, with adjacent stickers sharing edges.</td></tr>
+  <tr><td><code>AC-SHEET-7</code></td><td>With 11 entries, the PDF has 2 pages: 9 stickers, then 2 in row 1, positions 1 and 2.</td></tr>
+  <tr><td><code>AC-SHEET-8</code></td><td>Each page has 16 cut marks (4 per side), aligned with the grid lines and placed as specified.</td></tr>
+  <tr><td><code>AC-SHEET-9</code></td><td>Each page has the 100 mm calibration line and its label.</td></tr>
+  <tr><td><code>AC-SHEET-10</code></td><td>The art in the PDF matches each entry's crop. The image is at most 300 dpi, and never upscaled.</td></tr>
+  <tr><td><code>AC-SHEET-11</code></td><td>Text in the PDF uses the same size and line breaks as the preview, including clipping for "Text too long" entries.</td></tr>
+  <tr><td><code>AC-SHEET-12</code></td><td>Clicking Download PDF saves a file named <code>rfid-cards.pdf</code>.</td></tr>
+</table>
+</main>
+</body>
+</html>

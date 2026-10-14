@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0003: iTunes Search API</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › ADR</nav>
+<h1>ADR 0003: iTunes Search API</h1>
+<p class="lede">Status: accepted · 2026-10-14</p>
+
+<h2>Context</h2>
+<p>Search must return album art large enough for printing. A 51 mm art area at 300 dpi needs about 600 px. It must also return the artist and title, with no API key, because a static page cannot hide one.</p>
+<h2>Decision</h2>
+<p>Use the iTunes Search API (US store, <code>entity=album</code>) as the only online source. Request artwork at 1200 × 1200 px.</p>
+<h2>Alternatives</h2>
+<ul>
+  <li><b>Deezer</b>: no key, but art only up to 1000 px.</li>
+  <li><b>MusicBrainz + Cover Art Archive</b>: open data, but limited to 1 request/s, and many releases have no art.</li>
+  <li><b>Several sources with fallback</b>: better coverage, but more code and duplicates to merge.</li>
+</ul>
+<h2>Consequences</h2>
+<ul>
+  <li>Only the US catalogue is searched. Albums missing there need an upload.</li>
+  <li>The 1200 px URL is a URL pattern, not a documented API. If it stops working, the 100 px thumbnail would trigger the low-resolution warning.</li>
+</ul>
+</main>
+</body>
+</html>

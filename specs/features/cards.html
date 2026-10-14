@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card List Feature</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › Features › Card list</nav>
+<h1>Card list</h1>
+<p class="lede">The card entries waiting to be printed, each shown as a true-to-layout sticker preview.</p>
+
+<h2>Card entry</h2>
+<table>
+  <tr><th>Field</th><th>Meaning</th></tr>
+  <tr><td>image</td><td>The source image, kept in memory at full resolution.</td></tr>
+  <tr><td>crop</td><td>A square region of the image, in source pixels.</td></tr>
+  <tr><td>artist</td><td>Free text. May be empty.</td></tr>
+  <tr><td>title</td><td>Free text. May be empty.</td></tr>
+</table>
+
+<h2>Behaviour</h2>
+<ul>
+  <li>Entries are listed in the order they were added. That order is also their order on the sheets.</li>
+  <li>Each entry shows a sticker preview, editable artist and title fields, and the actions <b>Re-crop</b> and <b>Remove</b>.</li>
+  <li>The preview updates as the user types, and when the inset changes.</li>
+  <li>The header shows the entry count and the sheet count, e.g. "11 cards · 2 sheets".</li>
+  <li>New entries slide into the list. Removed entries slide out.</li>
+  <li>If the list is not empty, leaving or reloading the page asks the browser to confirm first.</li>
+  <li>Previews need the bundled font. If it fails to load, the page shows "Could not load the font. Reload the page to try again."</li>
+</ul>
+
+<h2>Text fitting</h2>
+<ul>
+  <li>The text area is the sticker width minus 3 mm padding on each side, and 31.6 mm minus 2.5 mm padding at top and bottom.</li>
+  <li>The artist goes above the title, both left-aligned. The block is centred vertically.</li>
+  <li>The title is bold and starts at 11 pt. The artist is regular, at 0.75 × the title size. Line height is 1.15 × the font size.</li>
+  <li>Lines wrap at spaces. If the block doesn't fit, the title size drops in 0.5 pt steps, down to 7 pt.</li>
+  <li>A single word wider than the line, or a block still too tall at 7 pt, means the text <b>does not fit</b>. It is then drawn at 7 pt, starting at the top of the text area so the artist stays visible, and clipped to the text area.</li>
+  <li>An empty field takes no space.</li>
+</ul>
+
+<h2>Warnings</h2>
+<p>Warnings appear on the entry. They don't block the PDF download.</p>
+<table>
+  <tr><th>Warning</th><th>When</th></tr>
+  <tr><td>Text too long</td><td>The text does not fit (see above).</td></tr>
+  <tr><td>Low resolution (N dpi)</td><td>The crop's side in pixels, divided by the art-area side in inches, is below 150.</td></tr>
+</table>
+
+<h2>Acceptance criteria</h2>
+<table>
+  <tr><th>ID</th><th>Criterion</th></tr>
+  <tr><td><code>AC-CARD-1</code></td><td>With no entries, the list shows "No cards yet. Search for an album or upload an image." and the PDF button is disabled.</td></tr>
+  <tr><td><code>AC-CARD-2</code></td><td>Entries appear in the order added. The header shows the right card and sheet counts (9 stickers per sheet, rounded up).</td></tr>
+  <tr><td><code>AC-CARD-3</code></td><td>Editing artist or title updates that entry's preview without a separate save step.</td></tr>
+  <tr><td><code>AC-CARD-4</code></td><td>Re-crop opens the crop dialog with the entry's current crop. Confirming updates the preview.</td></tr>
+  <tr><td><code>AC-CARD-5</code></td><td>Remove deletes the entry at once, with no confirmation. The counts update.</td></tr>
+  <tr><td><code>AC-CARD-6</code></td><td>A short artist and title render with the title at 11 pt and no warning.</td></tr>
+  <tr><td><code>AC-CARD-7</code></td><td>A title that needs a smaller size renders at the largest 0.5 pt step that fits, with no warning.</td></tr>
+  <tr><td><code>AC-CARD-8</code></td><td>A title that does not fit at 7 pt shows "Text too long". It disappears once the text is shortened enough.</td></tr>
+  <tr><td><code>AC-CARD-9</code></td><td>A crop of 250 × 250 px shows "Low resolution" at the default inset. A 1200 × 1200 px crop shows no warning.</td></tr>
+  <tr><td><code>AC-CARD-10</code></td><td>With at least one entry, reloading the page triggers the browser's leave-page confirmation. With none, it doesn't.</td></tr>
+</table>
+</main>
+</body>
+</html>

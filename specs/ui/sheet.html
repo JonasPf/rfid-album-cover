@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sheet Mock</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+  main { max-width: 1100px; }
+  .row { display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; }
+  .sheetwrap { flex: 1 1 420px; max-width: 620px; animation: slide .5s ease-out both; }
+  .side { flex: 1 1 260px; animation: slide .5s ease-out .15s both; }
+  @keyframes slide { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+  svg { display: block; width: 100%; height: auto; }
+  .ctl { display: flex; align-items: center; gap: 8px; margin: 8px 0 16px; }
+  .ctl input { width: 160px; }
+  figure { margin: 0 0 16px; }
+  #corner { max-width: 260px; }
+  figcaption { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › UI › Printed sheet</nav>
+<h1>Printed sheet (A4 PDF page)</h1>
+<p class="lede">One page with 9 stickers. Use the slider to see how the inset changes the geometry. Dimensions are in mm. Spec: <a href="../features/sheet.html">Sticker sheet PDF</a>.</p>
+<div class="ctl">Inset <input type="range" id="inset" min="0" max="3" step="0.1" value="1.5"> <b id="iv">1.5 mm</b></div>
+<div class="row">
+  <div class="sheetwrap"><svg id="sheet"></svg></div>
+  <div class="side">
+    <figure><svg id="one"></svg><figcaption>One sticker on its card (light grey).</figcaption></figure>
+    <figure><svg id="corner"></svg><figcaption id="cc"></figcaption></figure>
+  </div>
+</div>
+</main>
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const el = (t, a, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p && p.appendChild(e); return e; };
+const txt = (p, x, y, s, size, extra = {}) => { const t = el("text", { x, y, "font-size": size, fill: "#333", "font-family": "system-ui", ...extra }, p); t.textContent = s; return t; };
+const CW = 54, CH = 85.6, CR = 3.18, W = 210, H = 297;
+const covers = [["#1d3557", "#e63946"], ["#2a9d8f", "#264653"], ["#ef476f", "#073b4c"], ["#f4a261", "#e76f51"], ["#8338ec", "#06d6a0"],
+                ["#222", "#c1121f"], ["#3a86ff", "#ffbe0b"], ["#606c38", "#dda15e"], ["#14213d", "#fca311"]];
+
+function defs(svg) {
+  const d = el("defs", {}, svg);
+  covers.forEach(([a, b], i) => {
+    const g = el("linearGradient", { id: "g" + i + svg.id, x1: 0, y1: 0, x2: 1, y2: 1 }, d);
+    el("stop", { offset: 0, "stop-color": a }, g); el("stop", { offset: 1, "stop-color": b }, g);
+  });
+  const m = el("marker", { id: "arr" + svg.id, viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, d);
+  el("path", { d: "M0,0 L10,5 L0,10 z", fill: "#2a6f97" }, m);
+}
+function dim(svg, x1, y1, x2, y2, label, lx, ly, size = 3.2) {
+  el("line", { x1, y1, x2, y2, stroke: "#2a6f97", "stroke-width": .25, "marker-start": `url(#arr${svg.id})`, "marker-end": `url(#arr${svg.id})` }, svg);
+  txt(svg, lx, ly, label, size, { fill: "#2a6f97", "text-anchor": "middle" });
+}
+function sticker(p, x, y, w, h, i, gid) {
+  el("rect", { x, y, width: w, height: h, fill: "#fff" }, p);
+  el("rect", { x, y, width: w, height: w, fill: `url(#${gid})` }, p);
+  txt(p, x + 3, y + w + 12, "Artist " + (i + 1), 2.6, { fill: "#555" });
+  txt(p, x + 3, y + w + 17, "Album title " + (i + 1), 3.5, { "font-weight": 700, fill: "#111" });
+}
+
+function draw(inset) {
+  const sw = CW - 2 * inset, sh = CH - 2 * inset, gw = 3 * sw, gh = 3 * sh, mx = (W - gw) / 2, my = (H - gh) / 2;
+
+  // A4 sheet
+  const s = document.getElementById("sheet"); s.innerHTML = "";
+  s.setAttribute("viewBox", `-14 -4 ${W + 18} ${H + 8}`);
+  defs(s);
+  el("rect", { x: 0, y: 0, width: W, height: H, fill: "#fff", stroke: "#999", "stroke-width": .4 }, s);
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) sticker(s, mx + c * sw, my + r * sh, sw, sh, r * 3 + c, `g${r * 3 + c}sheet`);
+  const mk = (x1, y1, x2, y2) => el("line", { x1, y1, x2, y2, stroke: "#000", "stroke-width": .2 }, s);
+  for (let c = 0; c <= 3; c++) { const x = mx + c * sw; mk(x, my - 7, x, my - 2); mk(x, my + gh + 2, x, my + gh + 7); }
+  for (let r = 0; r <= 3; r++) { const y = my + r * sh; mk(mx - 7, y, mx - 2, y); mk(mx + gw + 2, y, mx + gw + 7, y); }
+  // calibration line
+  const cy = my + gh + 10;
+  mk(mx, cy, mx + 100, cy); mk(mx, cy - 1.5, mx, cy + 1.5); mk(mx + 100, cy - 1.5, mx + 100, cy + 1.5);
+  txt(s, mx + 103, cy + 0.8, "Should measure 100 mm", 2.1);
+  // dimensions
+  dim(s, mx, my - 10, mx + sw, my - 10, sw.toFixed(1), mx + sw / 2, my - 11.5);
+  dim(s, mx + gw + 10, my, mx + gw + 10, my + sh, "", 0, 0);
+  txt(s, mx + gw + 12, my + sh / 2, sh.toFixed(1), 3.2, { fill: "#2a6f97", transform: `rotate(90 ${mx + gw + 12} ${my + sh / 2})`, "text-anchor": "middle" });
+  dim(s, 0, my + sh * 1.5, mx, my + sh * 1.5, mx.toFixed(1), mx / 2, my + sh * 1.5 - 1.5);
+  dim(s, mx + gw / 2 + 20, 0, mx + gw / 2 + 20, my, "", 0, 0);
+  txt(s, mx + gw / 2 + 22, my / 2 + 1, my.toFixed(1), 3.2, { fill: "#2a6f97" });
+  txt(s, W / 2, -0.8, "A4 · 210 × 297", 3, { "text-anchor": "middle", fill: "#666" });
+
+  // one sticker on card
+  const o = document.getElementById("one"); o.innerHTML = "";
+  o.setAttribute("viewBox", "-4 -4 82 94"); defs(o);
+  el("rect", { x: 0, y: 0, width: CW, height: CH, rx: CR, fill: "#f4f4f4", stroke: "#bbb", "stroke-width": .3 }, o);
+  sticker(o, inset, inset, sw, sh, 0, "g0one");
+  dim(o, CW + 3, inset, CW + 3, inset + sw, "", 0, 0);
+  txt(o, CW + 5, inset + sw / 2, `art ${sw.toFixed(1)}`, 3, { fill: "#2a6f97" });
+  dim(o, CW + 3, inset + sw, CW + 3, inset + sh, "", 0, 0);
+  txt(o, CW + 5, inset + sw + 16, "text 31.6", 3, { fill: "#2a6f97" });
+
+  // corner zoom
+  const k = document.getElementById("corner"); k.innerHTML = "";
+  k.setAttribute("viewBox", "-0.5 -0.5 6 5"); defs(k);
+  el("rect", { x: -0.5, y: -0.5, width: 6, height: 5, fill: "#e9e7e2" }, k);
+  el("rect", { x: 0, y: 0, width: 60, height: 60, rx: CR, fill: "#fff", stroke: "#888", "stroke-width": .03 }, k);
+  el("rect", { x: inset, y: inset, width: 60, height: 60, fill: "#457b9d" }, k);
+  const gap = CR - Math.SQRT2 * (CR - inset);
+  document.getElementById("cc").innerHTML = gap > 0
+    ? `Top-left corner, 40×. The square corner sits <b>${gap.toFixed(2)} mm</b> inside the card's rounded edge.`
+    : `Top-left corner, 40×. The square corner <b>overhangs</b> the card's rounded edge by ${(-gap).toFixed(2)} mm.`;
+  document.getElementById("iv").textContent = inset.toFixed(1) + " mm";
+}
+document.getElementById("inset").addEventListener("input", (e) => draw(+e.target.value));
+draw(1.5);
+</script>
+</body>
+</html>

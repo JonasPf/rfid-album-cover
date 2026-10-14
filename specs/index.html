@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RFID Album Cover</title>
+<link rel="stylesheet" href="style.css">
+<script src="vendor/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script>
+</head>
+<body>
+<main>
+<h1>RFID Album Cover</h1>
+<p class="lede">A static web page that turns album covers and images into printable stickers for ISO-size RFID cards, such as the cards used with a <a href="https://phoniebox.de">Phoniebox</a>.</p>
+
+<h2>Goals</h2>
+<ul>
+  <li>Find an album's cover art and its artist and title by searching, or upload any image.</li>
+  <li>Generate an A4 PDF of portrait stickers at exact physical size, ready to print and cut with a paper trimmer.</li>
+  <li>Run entirely in the browser. No server and no account.</li>
+</ul>
+
+<h2>Non-goals</h2>
+<ul>
+  <li>Playing music, or linking cards to music. Phoniebox does that.</li>
+  <li>Reading or writing RFID tags.</li>
+  <li>Saving cards between sessions. Closing the tab discards the card list.</li>
+  <li>Card formats other than ISO ID-1, stickers with rounded corners, and cutting plotters.</li>
+  <li>Languages other than English.</li>
+</ul>
+
+<h2>Glossary</h2>
+<table>
+  <tr><th>Term</th><th>Meaning</th></tr>
+  <tr><td>Card</td><td>Physical RFID card, ISO/IEC 7810 ID-1: 54 × 85.6 mm, used upright (portrait).</td></tr>
+  <tr><td>Card entry</td><td>One item in the card list: an image, a crop, an artist and a title. Becomes one sticker.</td></tr>
+  <tr><td>Sticker</td><td>The printed rectangle stuck on a card. It has square corners and is smaller than the card by the inset on every side.</td></tr>
+  <tr><td>Inset</td><td>Distance between the card edge and the sticker edge. A setting with a default of 1.5 mm.</td></tr>
+  <tr><td>Art area</td><td>The square at the top of the sticker that shows the cropped image.</td></tr>
+  <tr><td>Text area</td><td>The strip below the art area, 31.6 mm high, with the artist and title.</td></tr>
+  <tr><td>Sheet</td><td>One A4 PDF page holding up to 9 stickers in a tight 3 × 3 grid, with cut marks.</td></tr>
+</table>
+
+<h2>How it works</h2>
+<pre class="mermaid">
+flowchart LR
+  S[Search box] -->|term| I[(iTunes Search API)]
+  I -->|albums + art URLs| R[Results]
+  R -->|pick| L[Card list]
+  U[Image upload] --> C[Crop dialog]
+  C --> L
+  L -->|edit text / re-crop / remove| L
+  L --> P[PDF generator]
+  P --> D[rfid-cards.pdf download]
+</pre>
+<p>All processing happens in the browser. The only network requests go to the iTunes Search API and Apple's artwork server. Both send <code>Access-Control-Allow-Origin: *</code>.</p>
+
+<h2>Features</h2>
+<ul>
+  <li><a href="features/search.html">Search</a>: find albums on iTunes and add them as card entries.</li>
+  <li><a href="features/upload.html">Upload and crop</a>: add any image and choose the square part to show.</li>
+  <li><a href="features/cards.html">Card list</a>: preview, edit text, re-crop, remove; text fitting and warnings.</li>
+  <li><a href="features/sheet.html">Sticker sheet PDF</a>: sticker size, inset setting, sheet layout, cut marks, PDF download.</li>
+</ul>
+
+<h2>UI mocks</h2>
+<ul>
+  <li><a href="ui/app.html">App</a>: the single page, with the crop dialog.</li>
+  <li><a href="ui/sheet.html">Printed sheet</a>: the A4 PDF page, with dimensions.</li>
+</ul>
+
+<h2>Architecture decisions</h2>
+<ol>
+  <li><a href="adr/0001-static-client-only.html">Static, client-only app on GitHub Pages</a></li>
+  <li><a href="adr/0002-tech-stack.html">Tech stack: TypeScript, Vite, Svelte, pdf-lib</a></li>
+  <li><a href="adr/0003-itunes-search.html">iTunes Search API as the only online source</a></li>
+  <li><a href="adr/0004-sticker-geometry.html">Sticker geometry: portrait, square corners, configurable inset</a></li>
+  <li><a href="adr/0005-pdf-in-browser.html">Generate the PDF in the browser</a></li>
+  <li><a href="adr/0006-session-only-state.html">Session-only state</a></li>
+</ol>
+
+<h2>Quality requirements</h2>
+<ul>
+  <li><b>Browsers:</b> current Chrome, Firefox and Safari on desktop.</li>
+  <li><b>Privacy:</b> no analytics and no cookies. Images and text never leave the browser. Search terms go to Apple only.</li>
+  <li><b>Fidelity:</b> the on-screen sticker preview and the PDF use the same font and the same text-fit result.</li>
+  <li><b>Documentation:</b> a concise <code>README.md</code> covering what the tool does, how to print (at 100 % / actual size), and the developer workflow. Code comments only where the reason isn't obvious.</li>
+  <li><b>Tests:</b> unit tests for geometry, text fitting and PDF layout. Playwright e2e tests cover every feature and every acceptance criterion; each test names the <code>AC-…</code> IDs it covers. E2E tests stub the iTunes API and artwork with fixtures and never call Apple.</li>
+</ul>
+
+<h2>Developer workflow</h2>
+<p>The project provides these <a href="https://taskfile.dev">Taskfile</a> commands:</p>
+<table>
+  <tr><th>Command</th><th>Does</th></tr>
+  <tr><td><code>task build</code></td><td>Type-check and build the static site into <code>dist/</code>.</td></tr>
+  <tr><td><code>task run</code></td><td>Start the Vite dev server.</td></tr>
+  <tr><td><code>task lint</code></td><td>Run the linters and the formatter check.</td></tr>
+  <tr><td><code>task test</code></td><td>Run the unit tests.</td></tr>
+  <tr><td><code>task e2e</code></td><td>Run the Playwright e2e tests against a production build.</td></tr>
+  <tr><td><code>task spec</code></td><td>Serve <code>./specs</code> locally (<code>python3 -m http.server 8000 -d specs</code>). Not part of <code>check</code>.</td></tr>
+  <tr><td><code>task check</code></td><td>Run build, lint, test and e2e, and fail if any of them fails. This is the pre-commit gate.</td></tr>
+</table>
+<p>A GitHub Actions workflow runs <code>task check</code> on every push. On <code>main</code>, it also deploys <code>dist/</code> to GitHub Pages.</p>
+</main>
+</body>
+</html>

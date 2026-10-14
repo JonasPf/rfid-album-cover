@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0001: Static, client-only app</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › ADR</nav>
+<h1>ADR 0001: Static, client-only app</h1>
+<p class="lede">Status: accepted · 2026-10-14</p>
+
+<h2>Context</h2>
+<p>The tool searches album art, crops images and builds a PDF. It holds no secrets and needs no shared state. The iTunes Search API and Apple's artwork server both send <code>Access-Control-Allow-Origin: *</code>, so a browser can call them directly and draw the artwork into a canvas.</p>
+<h2>Decision</h2>
+<p>Build a static single-page app with no backend, hosted on GitHub Pages. All image processing and PDF generation run in the browser.</p>
+<h2>Alternatives</h2>
+<ul>
+  <li><b>Go web server</b> (the default stack): adds hosting and operations work for no functional gain.</li>
+  <li><b>CLI</b>: no visual crop, and harder to check the result before printing.</li>
+</ul>
+<h2>Consequences</h2>
+<ul>
+  <li>Free hosting with no server to maintain.</li>
+  <li>If Apple drops CORS on either host, search breaks with no proxy to fall back on. Upload keeps working.</li>
+  <li>The build must work under the Pages sub-path, so all asset URLs are relative.</li>
+</ul>
+</main>
+</body>
+</html>
