@@ -70,6 +70,10 @@ function draw(inset) {
   defs(s);
   el("rect", { x: 0, y: 0, width: W, height: H, fill: "#fff", stroke: "#999", "stroke-width": .4 }, s);
   for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) sticker(s, mx + c * sw, my + r * sh, sw, sh, r * 3 + c, `g${r * 3 + c}sheet`);
+  // thin grey lines along the grid lines, over the art
+  const gl = (x1, y1, x2, y2) => el("line", { x1, y1, x2, y2, stroke: "#999", "stroke-width": .1 }, s);
+  for (let c = 0; c <= 3; c++) gl(mx + c * sw, my, mx + c * sw, my + gh);
+  for (let r = 0; r <= 3; r++) gl(mx, my + r * sh, mx + gw, my + r * sh);
   const mk = (x1, y1, x2, y2) => el("line", { x1, y1, x2, y2, stroke: "#000", "stroke-width": .2 }, s);
   for (let c = 0; c <= 3; c++) { const x = mx + c * sw; mk(x, my - 7, x, my - 2); mk(x, my + gh + 2, x, my + gh + 7); }
   for (let r = 0; r <= 3; r++) { const y = my + r * sh; mk(mx - 7, y, mx - 2, y); mk(mx + gw + 2, y, mx + gw + 7, y); }

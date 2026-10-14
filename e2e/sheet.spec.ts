@@ -29,8 +29,24 @@ function near(actual: number, expected: number, tol = TOL) {
   expect(Math.abs(actual - expected), `${actual} ≈ ${expected}`).toBeLessThanOrEqual(tol);
 }
 
-const isMark = (l: { x1: number; y1: number; x2: number; y2: number }) =>
-  Math.abs(Math.hypot(l.x2 - l.x1, l.y2 - l.y1) - 5) < 0.01;
+interface Segment {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
+
+const isMark = (l: Segment) => Math.abs(Math.hypot(l.x2 - l.x1, l.y2 - l.y1) - 5) < 0.01;
+
+/** Same end points, in either direction. */
+function sameSegment(a: Segment, b: Segment) {
+  const at = (x: number, y: number, px: number, py: number) =>
+    Math.abs(x - px) < TOL && Math.abs(y - py) < TOL;
+  return (
+    (at(a.x1, a.y1, b.x1, b.y1) && at(a.x2, a.y2, b.x2, b.y2)) ||
+    (at(a.x1, a.y1, b.x2, b.y2) && at(a.x2, a.y2, b.x1, b.y1))
+  );
+}
 
 /** Distinct x positions of vertical cut marks and y positions of horizontal ones. */
 function gridLines(page: PdfPage) {
@@ -212,6 +228,29 @@ test.describe("Sticker sheet PDF", () => {
       for (let i = 0; i < 4; i++) {
         near(xs[i]!, left + i * 51);
         near(ys[i]!, top + i * 82.6);
+      }
+    }
+  });
+
+  test("AC-SHEET-13: each page has 8 thin grey lines along the grid lines, over the art", async ({
+    page,
+  }) => {
+    await addCards(page, 10);
+    const { pages } = await downloadPdf(page);
+    for (const p of pages) {
+      const { xs, ys } = gridLines(p);
+      const grey = p.lines.filter((l) => l.color === "#999999");
+      expect(grey).toHaveLength(8);
+      const lastArt = Math.max(...p.images.map((img) => img.order));
+      const expected = [
+        ...xs.map((x) => ({ x1: x, y1: ys[0]!, x2: x, y2: ys[3]! })),
+        ...ys.map((y) => ({ x1: xs[0]!, y1: y, x2: xs[3]!, y2: y })),
+      ];
+      for (const e of expected) {
+        const found = grey.find((l) => sameSegment(l, e));
+        expect(found, JSON.stringify(e)).toBeDefined();
+        near(found!.width, 0.1, 0.001);
+        expect(found!.order).toBeGreaterThan(lastArt);
       }
     }
   });

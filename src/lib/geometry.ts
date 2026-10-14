@@ -18,6 +18,7 @@ export const ART_DPI = 300;
 export const LOW_RESOLUTION_DPI = 150;
 
 export const CUT_MARK = { offset: 2, length: 5, thickness: 0.2 } as const;
+export const GRID_LINE = { thickness: 0.1 } as const;
 export const CALIBRATION = {
   length: 100,
   gap: 10,
@@ -116,6 +117,9 @@ export interface SheetLayout {
   slots: Rect[];
   cutMarks: Line[];
   markThickness: number;
+  /** Lines along the whole grid, which stay on a strip once it is cut free. */
+  gridLines: Line[];
+  gridLineThickness: number;
   calibration: {
     line: Line;
     ticks: [Line, Line];
@@ -146,13 +150,16 @@ export function sheetLayout(inset: number): SheetLayout {
   const right = grid.x + grid.width;
   const bottom = grid.y + grid.height;
   const cutMarks: Line[] = [];
+  const gridLines: Line[] = [];
   for (let i = 0; i <= GRID_SIZE; i++) {
     const x = grid.x + i * sticker.width;
+    gridLines.push({ x1: x, y1: grid.y, x2: x, y2: bottom });
     cutMarks.push({ x1: x, y1: grid.y - far, x2: x, y2: grid.y - near });
     cutMarks.push({ x1: x, y1: bottom + near, x2: x, y2: bottom + far });
   }
   for (let i = 0; i <= GRID_SIZE; i++) {
     const y = grid.y + i * sticker.height;
+    gridLines.push({ x1: grid.x, y1: y, x2: right, y2: y });
     cutMarks.push({ x1: grid.x - far, y1: y, x2: grid.x - near, y2: y });
     cutMarks.push({ x1: right + near, y1: y, x2: right + far, y2: y });
   }
@@ -165,6 +172,8 @@ export function sheetLayout(inset: number): SheetLayout {
     slots,
     cutMarks,
     markThickness: CUT_MARK.thickness,
+    gridLines,
+    gridLineThickness: GRID_LINE.thickness,
     calibration: {
       line: { x1: grid.x, y1: y, x2, y2: y },
       ticks: [

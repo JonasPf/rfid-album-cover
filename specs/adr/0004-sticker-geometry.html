@@ -19,6 +19,7 @@
   <li><b>Portrait</b> layout: art on top, artist and title below. The 51 mm-wide text strip fits long titles in fewer lines than the 31.6 mm strip of landscape.</li>
   <li><b>Square corners</b>, with the sticker inset from the card edge by a configurable amount (default 1.5 mm).</li>
   <li>A <b>tight 3 × 3 grid</b> with cut marks, so each trimmer cut separates two rows or columns.</li>
+  <li>Thin grey <b>lines along every grid line</b>. A column strip has no margin beside the row lines, so the margin marks are gone once it is cut free; the grey lines stay on it.</li>
 </ul>
 <p>Why 1.5 mm: a square corner inset by <code>i</code> sits <code>3.18 − √2 · (3.18 − i)</code> mm inside the card's rounded corner. That is 0.10 mm at i = 1 and 0.80 mm at i = 1.5, which absorbs small cutting errors.</p>
 <h2>Alternatives</h2>
@@ -26,10 +27,13 @@
   <li><b>Landscape</b>: narrower text strip, so more wrapping.</li>
   <li><b>Rounded corners with gaps</b>: needs scissors or a corner punch, and fewer stickers fit per sheet.</li>
   <li><b>Exact size with bleed</b>: any cutting error shows at the card edge.</li>
+  <li><b>Grey dots at the grid crossings</b> instead of lines: tried, but too small to line a blade up with.</li>
+  <li><b>Guides from cover edges or a kept margin strip</b>: cover edges vanish on white covers, and lining up loose strips is fiddly.</li>
 </ul>
 <h2>Consequences</h2>
 <ul>
   <li>Every sticker has a thin white rim of card around it.</li>
+  <li>A cut that misses the centre of a grey line leaves a grey hairline, at most 0.1 mm wide, along a sticker edge.</li>
   <li>Users with a precise cutter can lower the inset. Below 0.93 mm, the corners overhang the card.</li>
 </ul>
 </main>

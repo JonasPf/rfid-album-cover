@@ -27,12 +27,17 @@ export interface PdfLine {
   y2: number;
   /** Stroke width in mm. */
   width: number;
+  color: string;
+  /** Position in the page's drawing order. */
+  order: number;
 }
 
 export interface PdfImage extends Box {
   objId: string;
   pixelWidth: number;
   pixelHeight: number;
+  /** Position in the page's drawing order. */
+  order: number;
 }
 
 export interface PdfText {
@@ -61,6 +66,7 @@ interface State {
   ctm: Matrix;
   lineWidth: number;
   fill: string;
+  stroke: string;
   clip: Box | null;
 }
 
@@ -112,7 +118,13 @@ export async function inspectPdf(data: Uint8Array): Promise<PdfPage[]> {
     const lines: PdfLine[] = [];
     const images: PdfImage[] = [];
     const texts: PdfText[] = [];
-    let state: State = { ctm: [1, 0, 0, 1, 0, 0], lineWidth: 1, fill: "#000000", clip: null };
+    let state: State = {
+      ctm: [1, 0, 0, 1, 0, 0],
+      lineWidth: 1,
+      fill: "#000000",
+      stroke: "#000000",
+      clip: null,
+    };
     const stack: State[] = [];
     let pendingClip = false;
     let textMatrix: Matrix = [1, 0, 0, 1, 0, 0];
@@ -136,13 +148,16 @@ export async function inspectPdf(data: Uint8Array): Promise<PdfPage[]> {
         case OPS.setFillRGBColor:
           state.fill = args[0];
           break;
+        case OPS.setStrokeRGBColor:
+          state.stroke = args[0];
+          break;
         case OPS.clip:
           pendingClip = true;
           break;
         case OPS.constructPath: {
           const [after, [path], minMax] = args as [number, [ArrayLike<number>], number[]];
+          const [minX, minY, maxX, maxY] = minMax as [number, number, number, number];
           if (pendingClip && after === OPS.endPath) {
-            const [minX, minY, maxX, maxY] = minMax as [number, number, number, number];
             state.clip = box(state.ctm, minX, minY, maxX, maxY);
             pendingClip = false;
           }
@@ -157,7 +172,15 @@ export async function inspectPdf(data: Uint8Array): Promise<PdfPage[]> {
                 const end = apply(state.ctm, path[k + 1]!, path[k + 2]!);
                 const [ax, ay] = toMm(...start);
                 const [bx, by] = toMm(...end);
-                lines.push({ x1: ax, y1: ay, x2: bx, y2: by, width: state.lineWidth * MM_PER_PT });
+                lines.push({
+                  x1: ax,
+                  y1: ay,
+                  x2: bx,
+                  y2: by,
+                  width: state.lineWidth * MM_PER_PT,
+                  color: state.stroke,
+                  order: i,
+                });
                 start = end;
                 k += 3;
               } else if (cmd === CURVE_TO) {
@@ -191,7 +214,7 @@ export async function inspectPdf(data: Uint8Array): Promise<PdfPage[]> {
         }
         case OPS.paintImageXObject: {
           const [objId, pixelWidth, pixelHeight] = args as [string, number, number];
-          images.push({ ...box(state.ctm, 0, 0, 1, 1), objId, pixelWidth, pixelHeight });
+          images.push({ ...box(state.ctm, 0, 0, 1, 1), objId, pixelWidth, pixelHeight, order: i });
           break;
         }
       }

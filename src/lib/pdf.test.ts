@@ -79,6 +79,26 @@ describe("buildPdf at the default inset with 11 cards", () => {
     }
   });
 
+  it("draws 8 grey grid lines, 0.1 mm thick, over the art", () => {
+    for (const p of pages) {
+      const grey = p.lines.filter((l) => l.color === "#999999");
+      expect(grey).toHaveLength(8);
+      const lastArt = Math.max(...p.images.map((img) => img.order));
+      for (const g of layout.gridLines) {
+        const found = grey.find(
+          (l) =>
+            Math.abs(l.x1 - g.x1) < TOL &&
+            Math.abs(l.y1 - g.y1) < TOL &&
+            Math.abs(l.x2 - g.x2) < TOL &&
+            Math.abs(l.y2 - g.y2) < TOL,
+        );
+        expect(found, JSON.stringify(g)).toBeDefined();
+        near(found!.width, 0.1, 0.001);
+        expect(found!.order).toBeGreaterThan(lastArt);
+      }
+    }
+  });
+
   it("draws the 100 mm calibration line and its label on every page", () => {
     for (const p of pages) {
       const line = p.lines.find((l) => Math.abs(l.x2 - l.x1 - 100) < TOL);

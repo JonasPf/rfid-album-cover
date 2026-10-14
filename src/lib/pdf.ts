@@ -37,17 +37,18 @@ export interface PdfFonts {
 
 const BLACK = rgb(0, 0, 0);
 const ARTIST_GREY = rgb(0x55 / 255, 0x55 / 255, 0x55 / 255);
+const GRID_LINE_GREY = rgb(0x99 / 255, 0x99 / 255, 0x99 / 255);
 
 const pt = (mm: number) => mm * PT_PER_MM;
 // pdf-lib's origin is the bottom left; the layout's is the top left.
 const ptY = (mm: number) => pt(A4.height - mm);
 
-function drawLine(page: PDFPage, l: Line, thickness: number) {
+function drawLine(page: PDFPage, l: Line, thickness: number, color = BLACK) {
   page.drawLine({
     start: { x: pt(l.x1), y: ptY(l.y1) },
     end: { x: pt(l.x2), y: ptY(l.y2) },
     thickness: pt(thickness),
-    color: BLACK,
+    color,
   });
 }
 
@@ -104,6 +105,9 @@ export async function buildPdf(
       page.pushOperators(popGraphicsState());
     }
 
+    for (const line of layout.gridLines) {
+      drawLine(page, line, layout.gridLineThickness, GRID_LINE_GREY);
+    }
     for (const mark of layout.cutMarks) drawLine(page, mark, layout.markThickness);
 
     const { calibration } = layout;

@@ -149,6 +149,24 @@ describe("sheetLayout", () => {
     expect(layout.markThickness).toBe(0.2);
   });
 
+  it("has 8 grid lines, 0.1 mm thick, across the whole grid", () => {
+    const { grid, gridLines } = layout;
+    expect(gridLines).toHaveLength(8);
+    expect(layout.gridLineThickness).toBe(0.1);
+    const vertical = gridLines.filter((l) => l.x1 === l.x2);
+    const horizontal = gridLines.filter((l) => l.y1 === l.y2);
+    [28.5, 79.5, 130.5, 181.5].forEach((x, i) => {
+      expect(vertical[i]!.x1).toBeCloseTo(x, 10);
+      expect(vertical[i]!.y1).toBeCloseTo(grid.y, 10);
+      expect(vertical[i]!.y2).toBeCloseTo(grid.y + grid.height, 10);
+    });
+    [24.6, 107.2, 189.8, 272.4].forEach((y, i) => {
+      expect(horizontal[i]!.y1).toBeCloseTo(y, 10);
+      expect(horizontal[i]!.x1).toBeCloseTo(grid.x, 10);
+      expect(horizontal[i]!.x2).toBeCloseTo(grid.x + grid.width, 10);
+    });
+  });
+
   it("puts a 100 mm calibration line 10 mm below the grid", () => {
     const { grid, calibration } = layout;
     const y = grid.y + grid.height + 10;

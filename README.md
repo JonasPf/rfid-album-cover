@@ -9,7 +9,7 @@ Search the iTunes catalogue or upload your own images, crop them, edit the artis
 1. Click **Download PDF** to save `rfid-cards.pdf`.
 2. Print it at **100 % / Actual size**. Turn off "Fit to page" or any scaling.
 3. Measure the line at the bottom of the page. It should be exactly 100 mm. If not, check the scaling setting and print again.
-4. Cut along the cut marks with a paper trimmer. The stickers share edges, so each cut separates two rows or columns.
+4. With a paper trimmer, cut the 4 column lines at the cut marks first. Then cut each strip into stickers along the thin grey lines. The stickers share edges, so each cut separates two rows or columns.
 
 Each sticker is smaller than the card by the **inset** on every side (default 1.5 mm), so small cutting errors don't show at the card's rounded corners. Lower it if you cut precisely; below about 0.9 mm the square corners overhang the card.
 
