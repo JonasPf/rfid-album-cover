@@ -1,6 +1,6 @@
 # RFID Album Cover — Agent Guide
 
-A static, client-only web app (TypeScript, Vite, Svelte, pdf-lib) that turns album covers from iTunes search or uploaded images into an A4 PDF of exact-size stickers for ISO RFID cards. There is no backend and nothing persists between sessions, and it is hosted on GitHub Pages. See [`specs/index.html`](specs/index.html).
+A static, client-only web app (TypeScript, Vite, Svelte, pdf-lib) that turns album covers from iTunes search, uploaded images or emoji into an A4 PDF of exact-size stickers for ISO RFID cards. There is no backend and nothing persists between sessions, and it is hosted on GitHub Pages. See [`specs/index.html`](specs/index.html).
 
 ## Build, run, lint, test
 
@@ -22,6 +22,7 @@ Workflows are driven through `task` (`Taskfile.yml`). Install the Playwright bro
 - `src/components/`, `src/App.svelte`: the Svelte UI.
 - `e2e/`: Playwright tests, one file per feature; `testing/pdf-inspect.ts` reads back the generated PDF.
 - `fixtures/`: iTunes responses and images for tests (`node scripts/make-fixtures.ts` regenerates the images).
+- `scripts/emoji-assets.ts`: Vite plugin that builds `emoji/` (index and Noto SVGs) from npm packages, served from memory by the dev server and written to `dist/` on build. Unit-tested next to it.
 
 ### Before committing
 

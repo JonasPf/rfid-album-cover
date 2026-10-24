@@ -2,6 +2,7 @@
   import { tick } from "svelte";
   import CardList from "./components/CardList.svelte";
   import CropDialog from "./components/CropDialog.svelte";
+  import EmojiPanel from "./components/EmojiPanel.svelte";
   import SearchPanel from "./components/SearchPanel.svelte";
   import Toolbar from "./components/Toolbar.svelte";
   import UploadPanel from "./components/UploadPanel.svelte";
@@ -43,6 +44,10 @@
     cards.add(image, initialCrop(image), album.artist, album.title);
   }
 
+  function addFromEmoji(image: SourceImage) {
+    cards.add(image, initialCrop(image));
+  }
+
   function queueUploads(images: SourceImage[]) {
     jobs.push(...images.map((image) => ({ id: nextJob++, kind: "new" as const, image })));
   }
@@ -77,9 +82,9 @@
 </header>
 
 <main class="layout">
-  <section class="panel" aria-labelledby="add-heading">
+  <section class="panel" aria-labelledby="add-heading" style:--tab={tab}>
     <h2 id="add-heading">Add cards</h2>
-    <div class="tabs" role="tablist" data-tab={tab}>
+    <div class="tabs" role="tablist">
       <button
         id="tab-search"
         role="tab"
@@ -94,15 +99,25 @@
         aria-controls="panel-upload"
         onclick={() => (tab = 1)}>Upload</button
       >
+      <button
+        id="tab-emoji"
+        role="tab"
+        aria-selected={tab === 2}
+        aria-controls="panel-emoji"
+        onclick={() => (tab = 2)}>Emoji</button
+      >
       <span class="indicator"></span>
     </div>
-    <div class="viewport" data-tab={tab}>
+    <div class="viewport">
       <div class="track">
         <div id="panel-search" role="tabpanel" aria-labelledby="tab-search" inert={tab !== 0}>
           <SearchPanel onadd={addFromSearch} />
         </div>
         <div id="panel-upload" role="tabpanel" aria-labelledby="tab-upload" inert={tab !== 1}>
           <UploadPanel onimages={queueUploads} />
+        </div>
+        <div id="panel-emoji" role="tabpanel" aria-labelledby="tab-emoji" inert={tab !== 2}>
+          <EmojiPanel active={tab === 2} onadd={addFromEmoji} />
         </div>
       </div>
     </div>
@@ -201,14 +216,11 @@
     position: absolute;
     bottom: -1px;
     left: 0;
-    width: 50%;
+    width: calc(100% / 3);
     height: 2px;
     background: var(--accent);
+    transform: translateX(calc(var(--tab) * 100%));
     transition: transform 0.3s ease;
-  }
-
-  .tabs[data-tab="1"] .indicator {
-    transform: translateX(100%);
   }
 
   .viewport {
@@ -218,16 +230,18 @@
   .track {
     display: flex;
     align-items: flex-start;
-    width: 200%;
+    width: 300%;
+    transform: translateX(calc(var(--tab) * -100% / 3));
     transition: transform 0.35s ease;
   }
 
   .track > div {
-    width: 50%;
+    width: calc(100% / 3);
     padding: 2px;
   }
 
-  .viewport[data-tab="1"] .track {
-    transform: translateX(-50%);
+  /* Hidden panels still show while they slide, but don't make the open one taller. */
+  .track > div[inert] {
+    height: 0;
   }
 </style>

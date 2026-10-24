@@ -2,7 +2,7 @@
 
 Print album covers as stickers for ISO-size RFID cards (54 × 85.6 mm), such as the cards used with a [Phoniebox](https://phoniebox.de).
 
-Search the iTunes catalogue or upload your own images, crop them, edit the artist and title, and download an A4 PDF with up to 9 stickers per page at exact size. Everything runs in your browser: there is no server and no account, and nothing is saved when you close the tab.
+Search the iTunes catalogue, upload your own images or pick an emoji, crop them, edit the artist and title, and download an A4 PDF with up to 9 stickers per page at exact size. Everything runs in your browser: there is no server and no account, and nothing is saved when you close the tab.
 
 ## Printing
 
@@ -34,3 +34,5 @@ GitHub Actions runs `task check` on every push and deploys `dist/` to GitHub Pag
 ## Licence
 
 The bundled [Inter](https://rsms.me/inter/) font is licensed under the SIL Open Font License; see [`src/assets/fonts/OFL.txt`](src/assets/fonts/OFL.txt).
+
+The emoji graphics are [Noto Emoji](https://github.com/googlefonts/noto-emoji) by Google, licensed under the Apache License 2.0. Their names, keywords and categories come from [Emojibase](https://emojibase.dev) (MIT). The build writes both licences to `dist/emoji/LICENSE.txt`.

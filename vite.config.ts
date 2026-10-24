@@ -1,10 +1,11 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vitest/config";
+import { emojiAssets } from "./scripts/emoji-assets.ts";
 
 export default defineConfig({
   // Relative asset URLs, so the build works under the GitHub Pages sub-path.
   base: "./",
-  plugins: [svelte()],
+  plugins: [svelte(), emojiAssets()],
   optimizeDeps: {
     // Only imported lazily by Download PDF. Without this, the dev server optimizes them on the
     // first click and reloads the page, which the leave-page guard turns into a prompt.
@@ -17,7 +18,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 800,
   },
   test: {
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "scripts/**/*.test.ts"],
     environment: "node",
   },
 });

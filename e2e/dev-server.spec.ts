@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { downloadPdf, fixture, stubItunes, uploadAndConfirm } from "./helpers";
+import {
+  downloadPdf,
+  emojiButton,
+  entries,
+  fixture,
+  searchEmoji,
+  sticker,
+  stubItunes,
+  uploadAndConfirm,
+} from "./helpers";
 
 // Runs against `vite --force`, so dependencies are optimized from scratch as on a first `task run`.
 // A dependency Vite only discovers when Download PDF lazy-loads it makes Vite reload the page,
@@ -22,4 +31,13 @@ test("the first Download PDF on the dev server does not reload the page", async 
   await downloadPdf(page);
 
   expect(interruptions).toEqual([]);
+});
+
+// The dev server serves the emoji from memory, not from dist/.
+test("AC-EMOJI-5: the dev server serves the emoji index and graphics", async ({ page }) => {
+  await stubItunes(page);
+  await page.goto("/");
+  await searchEmoji(page, "lion");
+  await emojiButton(page, "Lion").click();
+  await expect(sticker(entries(page).first())).toHaveAttribute("data-image-size", "1200x1200");
 });

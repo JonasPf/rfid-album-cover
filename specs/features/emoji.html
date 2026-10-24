@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emoji Feature</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › Features › Emoji</nav>
+<h1>Emoji</h1>
+<p class="lede">Pick an emoji and add it as a card entry, drawn large and centred in the art area.</p>
+
+<h2>Picker</h2>
+<ul>
+  <li>The <b>Emoji</b> tab sits next to Search and Upload. It lists the emoji under their category headings, in Unicode's order: Smileys &amp; emotion, People &amp; body, Animals &amp; nature, Food &amp; drink, Travel &amp; places, Activities, Objects, Symbols, Flags.</li>
+  <li>Each emoji shows its Noto Emoji graphic. Its name, e.g. "Lion", is its accessible name and its tooltip.</li>
+  <li>The list loads the first time the tab opens. Until then, nothing emoji-related is downloaded. If it fails to load, the tab shows "Could not load the emoji list".</li>
+  <li>Skin-tone variants are not listed, but can be pasted (see below). Country flags are not available: the Noto set has none.</li>
+</ul>
+
+<h3>Search</h3>
+<ul>
+  <li>The list filters as the user types in the search box. An emoji matches if every word of the term is the start of a word in its name or of one of its keywords, ignoring case. "lion" finds Lion, Seal (keyword "sea lion") and Leo (keyword "lion").</li>
+  <li>If the term consists only of emoji, typed or pasted, the list shows exactly those emoji, each once, in that order. This includes skin-tone variants, such as 👋🏽.</li>
+  <li>If nothing matches, the list shows "No emoji found".</li>
+</ul>
+
+<h2>Adding</h2>
+<ul>
+  <li>Clicking an emoji adds a card entry to the end of the card list, with an empty artist and title. Entries are added in click order. The same emoji can be added again.</li>
+  <li>The entry's image is 1200 × 1200 px, on white. The emoji's visible bounds (its non-transparent pixels) are centred, and scaled so that the longer side is 84 % of the image side. That leaves an 8 % margin, about 4 mm at the default inset.</li>
+  <li>The crop starts as the full image. Re-crop works as for any other entry, e.g. to zoom in further.</li>
+  <li>If the graphic fails to load, no entry is added and "Could not load emoji" is shown.</li>
+</ul>
+
+<h2>Source</h2>
+<p>The graphics are <a href="https://github.com/googlefonts/noto-emoji">Noto Emoji</a> SVGs (Apache 2.0), shipped with the app and loaded on demand from its own origin. Names, keywords, categories and order come from <a href="https://emojibase.dev">Emojibase</a> (MIT), in English. See <a href="../adr/0007-noto-emoji.html">ADR 0007</a>.</p>
+
+<h2>Acceptance criteria</h2>
+<table>
+  <tr><th>ID</th><th>Criterion</th></tr>
+  <tr><td><code>AC-EMOJI-1</code></td><td>Opening the Emoji tab lists the emoji under their category headings, in Unicode order, starting with "Grinning face". Each shows its Noto graphic and has its name as accessible name. No skin-tone variant is listed.</td></tr>
+  <tr><td><code>AC-EMOJI-2</code></td><td>A search term shows only the emoji where each word starts a word of the name or of a keyword, ignoring case: "LION" shows Lion, Seal and Leo, in that order; "rock" shows Rock and Rocket.</td></tr>
+  <tr><td><code>AC-EMOJI-3</code></td><td>A term made of emoji shows exactly those: "🦁🚀" shows Lion, then Rocket; "👋🏽" shows "Waving hand: medium skin tone".</td></tr>
+  <tr><td><code>AC-EMOJI-4</code></td><td>A term with no match, or an emoji the set lacks (such as 🇩🇪), shows "No emoji found".</td></tr>
+  <tr><td><code>AC-EMOJI-5</code></td><td>Clicking an emoji appends a card entry with an empty artist and title, a 1200 × 1200 px image and the crop (0, 0, 1200), with no warning. Clicking it again adds a second entry.</td></tr>
+  <tr><td><code>AC-EMOJI-6</code></td><td>In the entry's image, the emoji's bounds are centred on white, and the longer side is 1008 px (84 % of 1200 px): for 🔴 both sides, for ➖ the width.</td></tr>
+  <tr><td><code>AC-EMOJI-7</code></td><td>If the emoji graphic fails to load, no entry is added and "Could not load emoji" is shown. If the emoji list fails to load, the tab shows "Could not load the emoji list".</td></tr>
+</table>
+</main>
+</body>
+</html>

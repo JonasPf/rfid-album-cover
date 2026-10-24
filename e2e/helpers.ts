@@ -96,6 +96,32 @@ export async function upload(page: Page, files: Parameters<Locator["setInputFile
   await uploadInput(page).setInputFiles(files);
 }
 
+export function emojiPanel(page: Page): Locator {
+  return page.getByRole("tabpanel", { name: "Emoji" });
+}
+
+export async function openEmoji(page: Page) {
+  await page.getByRole("tab", { name: "Emoji" }).click();
+}
+
+export async function searchEmoji(page: Page, term: string) {
+  await openEmoji(page);
+  await emojiPanel(page).getByRole("searchbox", { name: "Search emoji" }).fill(term);
+}
+
+export function emojiButtons(page: Page): Locator {
+  return emojiPanel(page).getByRole("button");
+}
+
+export function emojiButton(page: Page, name: string): Locator {
+  return emojiPanel(page).getByRole("button", { name, exact: true });
+}
+
+/** The accessible names of the listed emoji, in order. */
+export async function emojiNames(page: Page): Promise<string[]> {
+  return emojiButtons(page).evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")!));
+}
+
 export function cropDialog(page: Page): Locator {
   return page.getByRole("dialog");
 }

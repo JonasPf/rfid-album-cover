@@ -11,11 +11,11 @@
 <body>
 <main>
 <h1>RFID Album Cover</h1>
-<p class="lede">A static web page that turns album covers and images into printable stickers for ISO-size RFID cards, such as the cards used with a <a href="https://phoniebox.de">Phoniebox</a>.</p>
+<p class="lede">A static web page that turns album covers, images and emoji into printable stickers for ISO-size RFID cards, such as the cards used with a <a href="https://phoniebox.de">Phoniebox</a>.</p>
 
 <h2>Goals</h2>
 <ul>
-  <li>Find an album's cover art and its artist and title by searching, or upload any image.</li>
+  <li>Find an album's cover art and its artist and title by searching, upload any image, or pick an emoji.</li>
   <li>Generate an A4 PDF of portrait stickers at exact physical size, ready to print and cut with a paper trimmer.</li>
   <li>Run entirely in the browser. No server and no account.</li>
 </ul>
@@ -49,16 +49,18 @@ flowchart LR
   R -->|pick| L[Card list]
   U[Image upload] --> C[Crop dialog]
   C --> L
+  E[Emoji picker] -->|pick| L
   L -->|edit text / re-crop / remove| L
   L --> P[PDF generator]
   P --> D[rfid-cards.pdf download]
 </pre>
-<p>All processing happens in the browser. The only network requests go to the iTunes Search API and Apple's artwork server. Both send <code>Access-Control-Allow-Origin: *</code>.</p>
+<p>All processing happens in the browser. The only requests to other sites go to the iTunes Search API and Apple's artwork server. Both send <code>Access-Control-Allow-Origin: *</code>. The emoji graphics come from the app's own site.</p>
 
 <h2>Features</h2>
 <ul>
   <li><a href="features/search.html">Search</a>: find albums on iTunes and add them as card entries.</li>
   <li><a href="features/upload.html">Upload and crop</a>: add any image and choose the square part to show.</li>
+  <li><a href="features/emoji.html">Emoji</a>: pick an emoji, drawn large and centred.</li>
   <li><a href="features/cards.html">Card list</a>: preview, edit text, re-crop, remove; text fitting and warnings.</li>
   <li><a href="features/sheet.html">Sticker sheet PDF</a>: sticker size, inset setting, sheet layout, cut marks, PDF download.</li>
 </ul>
@@ -77,6 +79,7 @@ flowchart LR
   <li><a href="adr/0004-sticker-geometry.html">Sticker geometry: portrait, square corners, configurable inset</a></li>
   <li><a href="adr/0005-pdf-in-browser.html">Generate the PDF in the browser</a></li>
   <li><a href="adr/0006-session-only-state.html">Session-only state</a></li>
+  <li><a href="adr/0007-noto-emoji.html">Bundled Noto Emoji</a></li>
 </ol>
 
 <h2>Quality requirements</h2>

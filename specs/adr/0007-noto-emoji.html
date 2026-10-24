@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADR 0007: Bundled Noto Emoji</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+<nav class="crumbs"><a href="../index.html">Spec</a> › ADR</nav>
+<h1>ADR 0007: Bundled Noto Emoji</h1>
+<p class="lede">Status: accepted · 2026-10-19</p>
+
+<h2>Context</h2>
+<p>An emoji must print as sharply as album art: a 51 mm art area at 300 dpi needs about 600 px. System emoji fonts differ by operating system and browser. Apple Color Emoji on macOS is a set of bitmaps of at most 160 px, about 80 dpi on a sticker. To be searchable, the picker also needs each emoji's name, keywords and category.</p>
+<p><a href="0001-static-client-only.html">ADR 0001</a> and <a href="0003-itunes-search.html">ADR 0003</a> keep the page free of third-party requests other than Apple's.</p>
+<h2>Decision</h2>
+<ul>
+  <li>Ship the <a href="https://github.com/googlefonts/noto-emoji">Noto Emoji</a> SVGs (Apache 2.0, from the <code>@iconify-json/noto</code> package) with the app: one file per emoji, at <code>emoji/&lt;code points&gt;.svg</code>.</li>
+  <li>Ship an index, <code>emoji/index.json</code>, with each emoji's English name, keywords, category and order from <a href="https://emojibase.dev">Emojibase</a> (<code>emojibase-data</code>, MIT). Only emoji that both sources have are included.</li>
+  <li>A Vite plugin builds both from the packages: it writes them into <code>dist/</code> on build and serves them from memory in the dev server. Nothing generated is committed.</li>
+  <li>The page loads the index when the Emoji tab first opens, and each SVG when it scrolls into view or is picked. A picked SVG is drawn on a canvas at 1200 × 1200 px.</li>
+</ul>
+<h2>Alternatives</h2>
+<ul>
+  <li><b>System emoji font on a canvas</b>: no dependency, but blurry on macOS, and the look depends on the system.</li>
+  <li><b>Twemoji</b>: vector graphics, but the set stops at Unicode 15.0 (2022), and the CC BY 4.0 licence needs a credit in the app.</li>
+  <li><b>Fluent Emoji</b>: vector and MIT-licensed, but its flat style matches neither Apple's nor Google's emoji, which users know best.</li>
+  <li><b>SVGs from a CDN</b>: keeps the site small, but every pick tells a third party what the user chose.</li>
+  <li><b>All graphics in one file</b>: one request, but about 24 MB before the first emoji shows.</li>
+</ul>
+<h2>Consequences</h2>
+<ul>
+  <li><code>dist/</code> grows by about 3,700 files and 24 MB. A visit downloads only the emoji it shows; the index is about 55 kB compressed.</li>
+  <li>Country flags are not available: the Noto package has none.</li>
+  <li>Emoji newer than the Noto package are missing until the dependency is updated.</li>
+  <li><code>dist/emoji/LICENSE.txt</code> carries the Apache 2.0 and MIT licence texts, and the README credits both sources.</li>
+</ul>
+</main>
+</body>
+</html>

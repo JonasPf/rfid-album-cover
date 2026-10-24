@@ -5,6 +5,7 @@
     "lib": ["es2023", "dom", "dom.iterable"],
     "types": ["vite/client", "node"],
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

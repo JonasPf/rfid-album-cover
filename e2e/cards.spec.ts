@@ -27,7 +27,7 @@ test.describe("Card list", () => {
     page,
   }) => {
     await expect(
-      page.getByText("No cards yet. Search for an album or upload an image."),
+      page.getByText("No cards yet. Search for an album, upload an image or pick an emoji."),
     ).toBeVisible();
     await expect(page.getByRole("button", { name: "Download PDF" })).toBeDisabled();
     await expect(count(page)).toHaveText("0 cards · 0 sheets");

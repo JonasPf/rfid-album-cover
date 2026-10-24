@@ -21,10 +21,12 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@iconify-json/noto": "1.2.9",
     "@playwright/test": "1.64.1",
     "@sveltejs/vite-plugin-svelte": "7.3.1",
     "@tsconfig/svelte": "5.0.8",
     "@types/node": "26.6.5",
+    "emojibase-data": "18.0.0",
     "eslint": "10.12.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-svelte": "3.23.1",

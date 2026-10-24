@@ -11,7 +11,7 @@
 </script>
 
 {#if cards.list.length === 0}
-  <p class="empty">No cards yet. Search for an album or upload an image.</p>
+  <p class="empty">No cards yet. Search for an album, upload an image or pick an emoji.</p>
 {/if}
 <ul class="list" aria-label="Cards">
   {#each cards.list as entry (entry.id)}

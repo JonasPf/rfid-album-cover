@@ -23,6 +23,7 @@ tasks:
       - package-lock.json
       - tsconfig.json
       - vite.config.ts
+      - scripts/emoji-assets.ts
       - svelte.config.js
     generates:
       - dist/index.html

@@ -32,12 +32,11 @@
   .tabs { position: relative; display: flex; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
   .tabs button { flex: 1; border: 0; background: none; padding: 8px; border-radius: 0; color: var(--muted); }
   .tabs button[aria-selected=true] { color: var(--fg); font-weight: 600; }
-  .tabs .ind { position: absolute; bottom: -1px; left: 0; width: 50%; height: 2px; background: var(--accent); transition: transform .3s ease; }
-  .tabs[data-tab="1"] .ind { transform: translateX(100%); }
+  .tabs .ind { position: absolute; bottom: -1px; left: 0; width: calc(100% / 3); height: 2px; background: var(--accent); transition: transform .3s ease; }
+  .tabs .ind { transform: translateX(calc(var(--tab) * 100%)); }
   .viewport { overflow: hidden; }
-  .track { display: flex; width: 200%; transition: transform .35s ease; }
-  .track > div { width: 50%; padding: 2px; }
-  .viewport[data-tab="1"] .track { transform: translateX(-50%); }
+  .track { display: flex; align-items: flex-start; width: 300%; transition: transform .35s ease; transform: translateX(calc(var(--tab) * -100% / 3)); }
+  .track > div { width: calc(100% / 3); padding: 2px; }
 
   .searchrow { display: flex; gap: 8px; }
   .results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
@@ -48,6 +47,12 @@
   .msg { color: var(--muted); font-size: 14px; margin-top: 12px; }
   .drop { border: 2px dashed var(--line); border-radius: 8px; padding: 32px 16px; text-align: center; color: var(--muted); }
   .drop button { margin-top: 8px; }
+  .emojis { margin-top: 12px; max-height: 420px; overflow-y: auto; }
+  .emojis h3 { font-size: 12px; font-weight: 600; color: var(--muted); margin: 8px 0 4px; }
+  .emojigrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 4px; }
+  .emojigrid button { padding: 4px; font-size: 26px; line-height: 1; aspect-ratio: 1; border-color: transparent; }
+  .emojigrid button:hover { border-color: var(--line); }
+  .art.emoji { background: #fff; display: flex; align-items: center; justify-content: center; font-size: calc(43 * var(--mm)); line-height: 1; }
 
   .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 16px; }
   .bar .count { font-weight: 600; margin-right: auto; }
@@ -100,12 +105,13 @@
 <div class="layout">
   <section class="panel" aria-label="Add cards">
     <h2>Add cards</h2>
-    <div class="tabs" id="tabs" data-tab="0" role="tablist">
+    <div class="tabs" id="tabs" style="--tab: 0" role="tablist">
       <button role="tab" aria-selected="true" data-i="0">Search</button>
       <button role="tab" aria-selected="false" data-i="1">Upload</button>
+      <button role="tab" aria-selected="false" data-i="2">Emoji</button>
       <span class="ind"></span>
     </div>
-    <div class="viewport" id="vp" data-tab="0">
+    <div class="viewport" id="vp" style="--tab: 0">
       <div class="track">
         <div>
           <form class="searchrow" id="sform">
@@ -119,6 +125,10 @@
             Drop images here<br><span class="hint">JPEG, PNG or WebP</span><br>
             <button id="choose">Choose files…</button>
           </div>
+        </div>
+        <div>
+          <input type="search" id="eq" placeholder="Search emoji" aria-label="Search emoji">
+          <div class="emojis" id="emojis"></div>
         </div>
       </div>
     </div>
@@ -174,7 +184,7 @@ const $ = (id) => document.getElementById(id);
 $("tabs").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b) return;
   const i = b.dataset.i;
-  $("tabs").dataset.tab = i; $("vp").dataset.tab = i;
+  $("tabs").style.setProperty("--tab", i); $("vp").style.setProperty("--tab", i);
   $("tabs").querySelectorAll("button").forEach((x) => x.setAttribute("aria-selected", x === b));
 });
 
@@ -192,6 +202,34 @@ function renderResults() {
 }
 $("sform").addEventListener("submit", (e) => { e.preventDefault(); renderResults(); });
 renderResults();
+
+// emoji (the real picker shows Noto graphics; the mock uses the system font)
+const emojiGroups = [
+  ["Smileys & emotion", [["😀", "Grinning face"], ["😂", "Face with tears of joy"], ["🥰", "Smiling face with hearts"], ["😴", "Sleeping face"], ["🤠", "Cowboy hat face"]]],
+  ["Animals & nature", [["🦁", "Lion", "leo"], ["🐯", "Tiger face"], ["🦭", "Seal", "sea lion"], ["🐘", "Elephant"], ["🦄", "Unicorn"], ["🌻", "Sunflower"]]],
+  ["Travel & places", [["🚀", "Rocket"], ["🚂", "Locomotive"], ["🏰", "Castle"], ["🌈", "Rainbow"]]],
+  ["Symbols", [["♌", "Leo", "lion"], ["❤️", "Red heart"], ["🔴", "Red circle"], ["➖", "Minus"]]],
+];
+function renderEmoji() {
+  const q = $("eq").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const box = $("emojis"); box.innerHTML = "";
+  let shown = 0;
+  for (const [group, list] of emojiGroups) {
+    const hits = list.filter(([, name, kw = ""]) => q.every((w) => `${name} ${kw}`.toLowerCase().split(/\s+/).some((t) => t.startsWith(w))));
+    if (!hits.length) continue;
+    if (!q.length) { const h = document.createElement("h3"); h.textContent = group; box.appendChild(h); }
+    const grid = document.createElement("div"); grid.className = "emojigrid";
+    for (const [e, name] of hits) {
+      const b = document.createElement("button"); b.textContent = e; b.title = name; b.setAttribute("aria-label", name);
+      b.onclick = () => addCard({ artist: "", title: "", emoji: e, lowres: false });
+      grid.appendChild(b); shown++;
+    }
+    box.appendChild(grid);
+  }
+  if (!shown) box.innerHTML = `<p class="msg">No emoji found</p>`;
+}
+$("eq").addEventListener("input", renderEmoji);
+renderEmoji();
 
 // cards
 function addCard(c) { cards.push({ id: nextId++, ...c }); renderList(c.focus ? cards.at(-1).id : null); }
@@ -220,7 +258,7 @@ function renderWarnings(entry, c) {
 function renderList(focusId) {
   renderCount();
   const list = $("list");
-  if (!cards.length) { list.innerHTML = `<div class="empty">No cards yet. Search for an album or upload an image.</div>`; return; }
+  if (!cards.length) { list.innerHTML = `<div class="empty">No cards yet. Search for an album, upload an image or pick an emoji.</div>`; return; }
   list.querySelector(".empty")?.remove();
   const have = new Set([...list.children].map((e) => +e.dataset.id));
   cards.forEach((c) => {
@@ -228,7 +266,7 @@ function renderList(focusId) {
     const e = document.createElement("div");
     e.className = "entry"; e.dataset.id = c.id;
     e.innerHTML = `
-      <div class="card"><div class="sticker"><div class="art" style="background:${c.art};background-size:${c.size || "cover"};background-position:${c.pos || "center"}"></div>
+      <div class="card"><div class="sticker">${c.emoji ? `<div class="art emoji">${c.emoji}</div>` : `<div class="art" style="background:${c.art};background-size:${c.size || "cover"};background-position:${c.pos || "center"}"></div>`}
         <div class="text"><div class="ar"></div><div class="ti"></div></div></div></div>
       <div class="fields">
         <label>Artist <input type="text" class="fa"></label>
@@ -302,10 +340,11 @@ $("ok").onclick = () => {
   closeCrop();
 };
 
-// seed: one normal card, one with long title, one low-res upload
+// seed: one normal card, one with long title, one low-res upload, one emoji
 addCard({ artist: "The Beatles", title: "Abbey Road", art: covers[0], lowres: false });
 addCard({ artist: "Rolf Zuckowski", title: "Rolfs Vogelhochzeit, Weihnachtsbäckerei und viele andere Lieder für die ganze Familie zum Mitsingen, Tanzen und Träumen", art: covers[2], lowres: false });
 addCard({ artist: "", title: "Summer holiday 2025", art: getComputedStyle(document.documentElement).getPropertyValue("--sample"), size: "177.78% 100%", pos: "40% 50%", lowres: true });
+addCard({ artist: "", title: "Bedtime stories", emoji: "🦁", lowres: false });
 </script>
 </body>
 </html>
